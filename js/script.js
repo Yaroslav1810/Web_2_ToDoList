@@ -68,6 +68,11 @@ const taskSection = document.createElement("section");
 taskSection.id = "task-section";
 
 
+const taskList = document.createElement("ul");
+taskList.id = "task-list";
+
+taskSection.append(taskList);
+
 // header
 const headerName = document.createElement("h1");
 headerName.textContent = "ToDo do be do List";
@@ -91,3 +96,58 @@ main.append(formSection);
 main.append(taskSection);
 
 document.head.append(favicon);
+
+// добавление задач
+const tasks = [];
+
+function show_tasks(){
+    taskList.replaceChildren();
+    let i = 0;
+    for (const task of tasks) {
+        i = i + 1;
+        let new_task = document.createElement("li");
+
+        new_task.id = "task-" + i;
+
+        let taskName = document.createElement("h3");
+        taskName.textContent = task.name;
+        new_task.append(taskName);
+
+        let taskDescription = document.createElement("p");
+        taskDescription.textContent = task.description;
+        new_task.append(taskDescription);
+
+        let taskDate = document.createElement("p");
+        taskDate.textContent = task.date.split("-").reverse().join("."); // почему то формат даты региональный сбивается, надо вручную сделать
+        new_task.append(taskDate);
+
+        let deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.textContent = "Удалить";
+        new_task.append(deleteButton);
+
+        taskList.append(new_task);
+    }
+}
+
+function add_Task(event){
+    event.preventDefault();
+
+    let name = formInputName.value;
+    let description = formInputDescription.value;
+    let date = formInputDate.value;
+
+    let new_task = {
+        name: name,
+        description: description,
+        date: date
+    }
+
+    tasks.push(new_task);
+
+    show_tasks();
+    toDoForm.reset()
+}
+
+
+toDoForm.addEventListener("submit", add_Task);
