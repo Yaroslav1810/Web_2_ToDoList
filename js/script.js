@@ -61,11 +61,15 @@ toDoForm.append(submitButton);
 // конец формы
 
 // section
+
 const formSection = document.createElement("section");
 formSection.id = "form-section";
 
 const taskSection = document.createElement("section");
 taskSection.id = "task-section";
+
+const controlSection = document.createElement("section");
+controlSection.id = "control-section";
 
 
 const taskList = document.createElement("ul");
@@ -93,9 +97,79 @@ header.append(headerText);
 
 formSection.append(toDoForm);
 main.append(formSection);
+main.append(controlSection);
 main.append(taskSection);
 
 document.head.append(favicon);
+
+// Фильтры и сортировки
+const searchInput = document.createElement("input");
+searchInput.type = "search";
+searchInput.id = "task-search";
+searchInput.placeholder = "Поиск по названию";
+
+const searchLabel = document.createElement("label");
+searchLabel.textContent = "Поиск задач: ";
+searchLabel.htmlFor = searchInput.id;
+
+const statusSelect = document.createElement("select");
+statusSelect.id = "task-status";
+
+const statusLabel = document.createElement("label");
+statusLabel.textContent = "Фильтр по статусу: ";
+statusLabel.htmlFor = statusSelect.id;
+
+const optionAll = document.createElement("option");
+optionAll.value = "all";
+optionAll.textContent = "Все задачи";
+
+const optionCompleted = document.createElement("option");
+optionCompleted.value = "completed";
+optionCompleted.textContent = "Завершённые";
+
+const optionUncompleted = document.createElement("option");
+optionUncompleted.value = "uncompleted";
+optionUncompleted.textContent = "Незавершённые";
+
+statusSelect.append(optionAll, optionCompleted, optionUncompleted);
+
+const sortSelect = document.createElement("select");
+sortSelect.id = "task-sort";
+
+const sortLabel = document.createElement("label");
+sortLabel.textContent = "Сортировка по дате и приоритету: ";
+sortLabel.htmlFor = sortSelect.id;
+
+const sortOptionAll = document.createElement("option");
+sortOptionAll.value = "priority";
+sortOptionAll.textContent = "Приоритет";
+
+const sortOptionCompleted = document.createElement("option");
+sortOptionCompleted.value = "date-asc";
+sortOptionCompleted.textContent = "По возрастанию даты";
+
+const sortOptionUncompleted = document.createElement("option");
+sortOptionUncompleted.value = "date-desc";
+sortOptionUncompleted.textContent = "По убыванию даты";
+
+sortSelect.append(sortOptionAll, sortOptionCompleted, sortOptionUncompleted);
+
+controlSection.append(
+    searchLabel,
+    searchInput,
+    statusLabel,
+    statusSelect,
+    sortLabel,
+    sortSelect
+);
+
+// конец сортировок
+
+searchInput.addEventListener("input", show_tasks);
+statusSelect.addEventListener("change", show_tasks);
+sortSelect.addEventListener("change", show_tasks);
+
+let draggedTaskId = null;
 
 // добавление задач
 let tasks = [];
@@ -153,8 +227,53 @@ function show_tasks(){
         label.prepend(checkbox);
         new_task.append(label);
 
+        new_task.draggable = true;
+        new_task.addEventListener("dragstart", () => {
+            draggedTaskId = task.id;
+        });
+
+        new_task.addEventListener("dragover", (event) => {
+            event.preventDefault();
+        });
+
+        new_task.addEventListener("drop", (event) => {
+            event.preventDefault();
+
+            const rect = new_task.getBoundingClientRect();
+            const insertAfter = event.clientY > (rect.top + rect.height / 2);
+
+            move_Task(draggedTaskId, task.id, insertAfter);
+        });
+
+        new_task.addEventListener("dragend", () => {
+            draggedTaskId = null;
+        });
+
         taskList.append(new_task);
     }
+}
+
+function move_Task(taskId, otherTaskId, insertAfter){
+    if (taskId === null || taskId === otherTaskId) return;
+    const index = tasks.findIndex(task => task.id === taskId);
+    if (index === -1) return;
+
+    const movedTask = tasks.splice(index, 1)[0];
+
+    const otherIndex = tasks.findIndex(task => task.id === otherTaskId);
+
+    if (insertAfter){
+        tasks.splice(otherIndex + 1, 0, movedTask);
+    }
+    else{
+        tasks.splice(otherIndex, 0, movedTask);
+    }
+
+
+    draggedTaskId = null;
+
+    show_tasks();
+    save_Tasks();
 }
 
 function add_Task(event){
