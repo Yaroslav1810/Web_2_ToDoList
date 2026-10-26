@@ -1,6 +1,13 @@
 const header = document.createElement("header");
 const main = document.createElement("main");
 
+document.title = "ToDo do be do List";
+
+const viewport = document.createElement("meta");
+viewport.name = "viewport";
+viewport.content = "width=device-width, initial-scale=1.0";
+document.head.append(viewport);
+
 document.body.append(header, main);
 
 // Форма создания задачи
@@ -112,6 +119,14 @@ const searchLabel = document.createElement("label");
 searchLabel.textContent = "Поиск задач: ";
 searchLabel.htmlFor = searchInput.id;
 
+const searchDateInput = document.createElement("input");
+searchDateInput.type = "date";
+searchDateInput.id = "task-date-search";
+
+const searchDateLabel = document.createElement("label");
+searchDateLabel.textContent = "Поиск даты: ";
+searchDateLabel.htmlFor = searchDateInput.id;
+
 const statusSelect = document.createElement("select");
 statusSelect.id = "task-status";
 
@@ -157,6 +172,8 @@ sortSelect.append(sortOptionAll, sortOptionCompleted, sortOptionUncompleted);
 controlSection.append(
     searchLabel,
     searchInput,
+    searchDateLabel,
+    searchDateInput,
     statusLabel,
     statusSelect,
     sortLabel,
@@ -165,9 +182,7 @@ controlSection.append(
 
 // конец сортировок
 
-searchInput.addEventListener("input", show_tasks);
-statusSelect.addEventListener("change", show_tasks);
-sortSelect.addEventListener("change", show_tasks);
+controlSection.addEventListener("input", show_tasks);
 
 let draggedTaskId = null;
 
@@ -185,8 +200,11 @@ if (storageTasks){
 }
 
 function show_tasks(){
+    let visible_tasks = get_visible_tasks();
+
     taskList.replaceChildren();
-    for (const task of tasks) {
+
+    for (const task of visible_tasks) {
         let new_task = document.createElement("li");
         new_task.classList.toggle("completed", task.completed);
 
@@ -414,6 +432,54 @@ function edit_Task(id){
 
 }
 
+// сортировка фильтры и поиск
+function get_visible_tasks(){
+    const search = searchInput.value.trim().toLowerCase();
+    const searchDate = searchDateInput.value;
+    const status = statusSelect.value;
+    const sort = sortSelect.value;
+
+    let visible_tasks = tasks.slice();
+
+    if (search !== "") {
+        visible_tasks = visible_tasks.filter(task => task.name.toLowerCase().includes(search) || task.description.toLowerCase().includes(search));
+    }
+
+    if (searchDate != "") {
+        visible_tasks = visible_tasks.filter(task => task.date == searchDate);
+    }
+
+    if (status === "completed") {
+        visible_tasks = visible_tasks.filter(task => task.completed);
+    }
+    else if (status === "uncompleted") {
+        visible_tasks = visible_tasks.filter(task => !task.completed);
+    }
+
+    if (sort == "date-asc") {
+        visible_tasks.sort((a, b) => {
+            if (a.date < b.date) return -1;
+            if (a.date > b.date) return 1;
+            return 0;
+        });
+    }
+    else if (sort == "date-desc") {
+        visible_tasks.sort((a, b) => {
+            if (a.date < b.date) return 1;
+            if (a.date > b.date) return -1;
+            return 0;
+        });
+    }
+
+    return visible_tasks;
+}
+
 toDoForm.addEventListener("submit", add_Task);
+
+const style = document.createElement("link");
+style.rel = "stylesheet";
+style.href = "css/style.css";
+
+document.head.append(style);
 
 show_tasks();
