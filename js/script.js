@@ -84,6 +84,12 @@ taskList.id = "task-list";
 
 taskSection.append(taskList);
 
+const sidebar = document.createElement("div");
+sidebar.id = "sidebar";
+
+
+
+
 // header
 const headerName = document.createElement("h1");
 headerName.textContent = "ToDo do be do List";
@@ -103,17 +109,17 @@ header.append(headerName);
 header.append(headerText);
 
 formSection.append(toDoForm);
-main.append(formSection);
-main.append(controlSection);
-main.append(taskSection);
+sidebar.append(formSection, controlSection);
 
+main.append(sidebar);
+main.append(taskSection);
 document.head.append(favicon);
 
 // Фильтры и сортировки
 const searchInput = document.createElement("input");
 searchInput.type = "search";
 searchInput.id = "task-search";
-searchInput.placeholder = "Поиск по названию";
+searchInput.placeholder = "Поиск по названию и описанию";
 
 const searchLabel = document.createElement("label");
 searchLabel.textContent = "Поиск задач: ";
@@ -215,26 +221,34 @@ function show_tasks(){
 
         let taskDescription = document.createElement("p");
         taskDescription.textContent = task.description;
+        taskDescription.className = "task-description";
         new_task.append(taskDescription);
 
         let taskDate = document.createElement("p");
         taskDate.textContent = task.date.split("-").reverse().join("."); // почему то формат даты региональный сбивается, надо вручную сделать
+        taskDate.className = "task-date";
         new_task.append(taskDate);
 
         let deleteButton = document.createElement("button");
         deleteButton.type = "button";
         deleteButton.textContent = "Удалить";
         deleteButton.addEventListener("click", () => delete_Task(task.id));
-        new_task.append(deleteButton);
+        deleteButton.className = "delete-button";
+
 
         let editButton = document.createElement("button");
         editButton.type = "button";
         editButton.textContent = "Редактировать";
         editButton.addEventListener("click", () => edit_Task(task.id));
-        new_task.append(editButton);
+        editButton.className = "edit-button";
+
 
         let label = document.createElement("label");
         label.textContent = "Выполнено";
+
+        const taskActions = document.createElement("div");
+        taskActions.className = "task-actions";
+        taskActions.append(deleteButton, editButton);
 
 
         let checkbox = document.createElement("input");
@@ -243,7 +257,9 @@ function show_tasks(){
         checkbox.addEventListener("change", () => {complete_Task(task.id, checkbox.checked);});
 
         label.prepend(checkbox);
-        new_task.append(label);
+        taskActions.append(label);
+
+        new_task.append(taskActions);
 
         new_task.draggable = true;
         new_task.addEventListener("dragstart", () => {

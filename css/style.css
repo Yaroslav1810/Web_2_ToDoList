@@ -1,0 +1,185 @@
+:root {
+    --background: #F5F3ED;
+    --surface: #FFFEFA;
+    --text: #3B352D;
+    --primary: #2A6639;
+    --secondary: #BA6900;
+    --accent: #6033BA;
+}
+
+body {
+    background-color: var(--background);
+    color: var(--text);
+}
+
+header {
+    text-align: center;
+}
+
+header,
+#sidebar {
+    overflow-wrap: anywhere;
+}
+
+main {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); /* можно колонкам сжиматься меньше ширины содержимого */
+    gap: 24px;
+}
+
+textarea {
+    field-sizing: content;
+    min-height: 100px;
+    resize: vertical;
+}
+
+#sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: stretch;
+}
+
+#sidebar > section {
+    background-color: var(--surface);
+    padding: 20px;
+    border-radius: 16px;
+    border: 2px solid var(--primary);
+}
+
+.taskForm,
+.editForm,
+#control-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.taskForm input,
+.taskForm textarea,
+.editForm input,
+.editForm textarea,
+#control-section input,
+#control-section select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border: 1px solid var(--primary);
+    border-radius: 8px;
+}
+
+button[type="submit"] {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px;
+    font: inherit;
+    cursor: pointer;
+}
+
+#task-edit_form-back {
+    background-color: var(--secondary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px;
+    font: inherit;
+    cursor: pointer;
+}
+
+#task-list {
+    list-style: none;
+    margin: 5px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+#task-list > li {
+    background-color: var(--surface);
+    padding: 20px;
+    border: 2px solid var(--primary);
+    border-radius: 16px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-wrap: anywhere;
+}
+
+#task-list > li.completed {
+    background-color: rgb(from var(--secondary) r g b / 10%);
+}
+
+.task-date {
+    color: var(--secondary);
+    font-size: 14px;
+}
+
+.task-actions {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap; /* для адаптива */
+}
+
+.task-actions button {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px;
+    font: inherit;
+    cursor: pointer;
+}
+
+.task-actions .delete-button {
+    background-color: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--text);
+}
+
+.task-actions label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.task-actions input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--secondary);
+}
+
+:focus {
+    border-color: var(--accent);
+    outline: 3px solid var(--accent);
+}
+
+
+@media (max-width: 800px) {
+    main {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 500px) {
+    #sidebar > section,
+    #task-list > li {
+        padding: 14px;
+    }
+
+    #task-list {
+        margin: 5px;
+        padding: 3px;
+    }
+
+    .task-actions {
+        gap: 10px;
+    }
+}
+
